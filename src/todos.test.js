@@ -1,4 +1,4 @@
-import todos from './todos'
+import {todos} from './todos'
 import deepFreeze from 'deep-freeze'
 
 it('add todo', () => {

@@ -1,47 +1,48 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
 import './index.css'
 import registerServiceWorker from './registerServiceWorker'
-import counter from './counter'
 import { createStore } from 'redux'
+import {todoApp, todos} from './todos'
 
-// creatStore()にリデューサーを渡す
-const store = createStore(counter)
+/* Step 1 */
+// const store = createStore(todos)
 
-const Counter = ({
-  value,
-  onIncrement,
-  onDecrement
-}) => (
-  <div>
-    <h1>{value}</h1>
-    <button onClick={onIncrement}>+</button>
-    <button onClick={onDecrement}>-</button>
-  </div>
-)
+/* Step 2 */
+const store = createStore(todoApp)
 
-const render = () => {
-  ReactDOM.render(
-    <Counter
-      value={store.getState()}
-      onIncrement={() =>
-        store.dispatch({
-          type: 'INCREMENT'
-        })
-      }
-      onDecrement={() =>
-        store.dispatch({
-          type: 'DECREMENT'
-        })
-      }
-    />,
-    document.getElementById('root')
-  )
-}
+console.log('Initial state:')
+console.log(store.getState())
+console.log('---------------')
 
-// storeの変更を監視して実行されるコールバックを登録(ここではレンダー関数)
-store.subscribe(render)
-// 初期表示
-render()
+console.log('Dispatching ADD_TODO.')
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 0,
+  text: 'Learn Redux'
+})
+
+console.log('Current state:')
+console.log(store.getState())
+console.log('---------------')
+
+console.log('Dispatching ADD_TODO.')
+store.dispatch({
+  type: 'ADD_TODO',
+  id: 1,
+  text: 'Go shopping'
+})
+
+console.log('Current state:')
+console.log(store.getState())
+console.log('---------------')
+
+console.log('Dispatching TOGGLE_TODO.')
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 0
+})
+
+console.log('Current state:')
+console.log(store.getState())
+console.log('---------------')
 
 registerServiceWorker()
