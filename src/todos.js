@@ -1,3 +1,7 @@
+import React from 'react'
+import { Component } from 'react'
+import { createStore } from 'redux'
+
 const combineReducers = (reducers) => {
   return (state = {}, action) => {
     return Object.keys(reducers).reduce(
@@ -62,3 +66,36 @@ export const todos = (state = [], action) => {
 }
 
 export const todoApp = combineReducers({ todos, visibilityFilter })
+
+export const store = createStore(todoApp)
+
+let nextTodoId = 0
+export class TodoApp extends Component {
+  render () {
+    return (
+      <div>
+        <input type="text" ref={node => {
+          this.input = node
+        }} />
+        <button onClick={() => {
+          store.dispatch({
+            type: 'ADD_TODO',
+            text: this.input.value,
+            id: nextTodoId++
+          })
+          this.input.value = ''
+        }}>
+          Add Todo
+        </button>
+
+        <ul>
+          {this.props.todos.map(todo =>
+            <li key={todo.id}>
+              {todo.text}
+            </li>
+          )}
+        </ul>
+      </div>
+    )
+  }
+}
