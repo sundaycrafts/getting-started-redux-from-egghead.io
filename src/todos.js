@@ -169,7 +169,7 @@ const TodoList = ({
   </ul>
 )
 
-const AddTodo = (props, { store }) => {
+let AddTodo = ({ dispatch }) => {
   let input
   return (
     <div>
@@ -177,7 +177,7 @@ const AddTodo = (props, { store }) => {
         input = node
       }} />
       <button onClick={() => {
-        store.dispatch({
+        dispatch({
           type: 'ADD_TODO',
           id: nextTodoId++,
           text: input.value
@@ -189,9 +189,22 @@ const AddTodo = (props, { store }) => {
     </div>
   )
 }
-AddTodo.contextTypes = {
-  store: PropTypes.object
-}
+AddTodo = connect(
+  /* Step 1 */
+  // state => {
+  //   return {}
+  // },
+  // dispatch => {
+  //   return { dispatch }
+  // }
+
+  /* Step 2 */
+  // null,
+  // null
+
+  /* Step 3 */
+  // Nothing anything
+)(AddTodo)
 
 const getVisibleTodos = (
   todos,
@@ -229,7 +242,7 @@ export const todos = (state = [], action) => {
 
 export const todoApp = combineReducers({ todos, visibilityFilter })
 
-const mapStateToProps = (state) => {
+const mapStateToTodoListProps = (state) => {
   return {
     todos: getVisibleTodos(
       state.todos,
@@ -238,7 +251,7 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToTodoListProps = (dispatch) => {
   return {
     onTodoClick: id => {
       dispatch({
@@ -250,43 +263,9 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 const VisibleTodoList = connect(
-  mapStateToProps,
-  mapDispatchToProps
+  mapStateToTodoListProps,
+  mapDispatchToTodoListProps
 )(TodoList)
-
-// class VisibleTodoList extends Component {
-// /* A: subscribe store state in context */
-//   componentDidMount () {
-//     const { store } = this.context
-//     store.unsubscribe = store.subscribe(() =>
-//       this.forceUpdate()
-//     )
-//   }
-
-//   componentWillUnmount () {
-//     this.unsubscribe()
-//   }
-
-//   render () {
-//     const { store } = this.context
-//     const state = store.getState()
-
-// /* B: map props & dispatch to TodoList component */
-//     return (
-//       <TodoList
-//         todos={
-
-//         }
-//         onTodoClick={
-//
-//         }
-//       />
-//     )
-//   }
-// }
-// VisibleTodoList.contextTypes = {
-//   store: PropTypes.object
-// }
 
 let nextTodoId = 0
 export const TodoApp = () => (
