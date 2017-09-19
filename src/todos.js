@@ -163,9 +163,7 @@ const TodoList = ({
   </ul>
 )
 
-const AddTodo = ({
-  onAddClick
-}) => {
+const AddTodo = () => {
   let input
   return (
     <div>
@@ -173,7 +171,11 @@ const AddTodo = ({
         input = node
       }} />
       <button onClick={() => {
-        onAddClick(input.value)
+        store.dispatch({
+          type: 'ADD_TODO',
+          id: nextTodoId++,
+          text: input.value
+        })
         input.value = ''
       }}>
         Add Todo
@@ -220,35 +222,44 @@ export const todoApp = combineReducers({ todos, visibilityFilter })
 
 export const store = createStore(todoApp)
 
-let nextTodoId = 0
-export const TodoApp = ({
-  todos,
-  visibilityFilter
-}) => (
-  <div>
-    <AddTodo
-      onAddClick={text =>
-        store.dispatch({
-          type: 'ADD_TODO',
-          id: nextTodoId++,
-          text
-        })
-      }
-    />
-    <TodoList
-      todos={
-        getVisibleTodos(
-          todos,
-          visibilityFilter
-        )
-      }
-      onTodoClick={id =>
-        store.dispatch({
-          type: 'TOGGLE_TODO',
-          id
-        })
-      } />
+class VisibleTodoList extends Component {
+  componentDidMount () {
+    store.unsubscribe = store.subscribe(() =>
+      this.forceUpdate()
+    )
+  }
 
+  componentWillUnmount () {
+    this.unsubscribe()
+  }
+
+  render () {
+    const state = store.getState()
+
+    return (
+      <TodoList
+        todos={
+          getVisibleTodos(
+            state.todos,
+            state.visibilityFilter
+          )
+        }
+        onTodoClick={id =>
+          store.dispatch({
+            type: 'TOGGLE_TODO',
+            id
+          })
+        }
+      />
+    )
+  }
+}
+
+let nextTodoId = 0
+export const TodoApp = () => (
+  <div>
+    <AddTodo />
+    <VisibleTodoList />
     <Footer />
   </div>
 )
