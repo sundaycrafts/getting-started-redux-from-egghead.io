@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Component } from 'react'
 
 const combineReducers = (reducers) => {
@@ -73,7 +74,7 @@ const Link = ({
 
 class FilterLink extends Component {
   componentDidMount () {
-    const { store } = this.props
+    const { store } = this.context
     store.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     )
@@ -85,7 +86,7 @@ class FilterLink extends Component {
 
   render () {
     const props = this.props
-    const { store } = this.props
+    const { store } = this.context
     const state = store.getState()
 
     return (
@@ -106,6 +107,9 @@ class FilterLink extends Component {
     )
   }
 }
+FilterLink.contextTypes = {
+  store: PropTypes.object
+}
 
 const Todo = ({
   onClick,
@@ -125,27 +129,24 @@ const Todo = ({
   </li>
 )
 
-const Footer = ({ store }) => (
+const Footer = () => (
   <p>
     Show:
     {' '}
     <FilterLink
       filter='SHOW_ALL'
-      store={store}
     >
       All
     </FilterLink>
     {', '}
     <FilterLink
       filter='SHOW_ACTIVE'
-      store={store}
     >
       Active
     </FilterLink>
     {', '}
     <FilterLink
       filter='SHOW_COMPLETED'
-      store={store}
     >
       Completed
     </FilterLink>
@@ -167,7 +168,7 @@ const TodoList = ({
   </ul>
 )
 
-const AddTodo = ({ store }) => {
+const AddTodo = (props, { store }) => {
   let input
   return (
     <div>
@@ -186,6 +187,9 @@ const AddTodo = ({ store }) => {
       </button>
     </div>
   )
+}
+AddTodo.contextTypes = {
+  store: PropTypes.object
 }
 
 const getVisibleTodos = (
@@ -226,7 +230,7 @@ export const todoApp = combineReducers({ todos, visibilityFilter })
 
 class VisibleTodoList extends Component {
   componentDidMount () {
-    const { store } = this.props
+    const { store } = this.context
     store.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     )
@@ -237,7 +241,7 @@ class VisibleTodoList extends Component {
   }
 
   render () {
-    const { store } = this.props
+    const { store } = this.context
     const state = store.getState()
 
     return (
@@ -258,12 +262,15 @@ class VisibleTodoList extends Component {
     )
   }
 }
+VisibleTodoList.contextTypes = {
+  store: PropTypes.object
+}
 
 let nextTodoId = 0
-export const TodoApp = ({ store }) => (
+export const TodoApp = () => (
   <div>
-    <AddTodo store={store} />
-    <VisibleTodoList store={store} />
-    <Footer store={store} />
+    <AddTodo />
+    <VisibleTodoList />
+    <Footer />
   </div>
 )
