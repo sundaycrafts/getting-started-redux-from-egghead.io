@@ -1,6 +1,5 @@
 import React from 'react'
 import { Component } from 'react'
-import { createStore } from 'redux'
 
 const combineReducers = (reducers) => {
   return (state = {}, action) => {
@@ -74,6 +73,7 @@ const Link = ({
 
 class FilterLink extends Component {
   componentDidMount () {
+    const { store } = this.props
     store.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     )
@@ -85,6 +85,7 @@ class FilterLink extends Component {
 
   render () {
     const props = this.props
+    const { store } = this.props
     const state = store.getState()
 
     return (
@@ -124,24 +125,27 @@ const Todo = ({
   </li>
 )
 
-const Footer = () => (
+const Footer = ({ store }) => (
   <p>
     Show:
     {' '}
     <FilterLink
       filter='SHOW_ALL'
+      store={store}
     >
       All
     </FilterLink>
     {', '}
     <FilterLink
       filter='SHOW_ACTIVE'
+      store={store}
     >
       Active
     </FilterLink>
     {', '}
     <FilterLink
       filter='SHOW_COMPLETED'
+      store={store}
     >
       Completed
     </FilterLink>
@@ -163,7 +167,7 @@ const TodoList = ({
   </ul>
 )
 
-const AddTodo = () => {
+const AddTodo = ({ store }) => {
   let input
   return (
     <div>
@@ -220,10 +224,9 @@ export const todos = (state = [], action) => {
 
 export const todoApp = combineReducers({ todos, visibilityFilter })
 
-export const store = createStore(todoApp)
-
 class VisibleTodoList extends Component {
   componentDidMount () {
+    const { store } = this.props
     store.unsubscribe = store.subscribe(() =>
       this.forceUpdate()
     )
@@ -234,6 +237,7 @@ class VisibleTodoList extends Component {
   }
 
   render () {
+    const { store } = this.props
     const state = store.getState()
 
     return (
@@ -256,10 +260,10 @@ class VisibleTodoList extends Component {
 }
 
 let nextTodoId = 0
-export const TodoApp = () => (
+export const TodoApp = ({ store }) => (
   <div>
-    <AddTodo />
-    <VisibleTodoList />
-    <Footer />
+    <AddTodo store={store} />
+    <VisibleTodoList store={store} />
+    <Footer store={store} />
   </div>
 )
