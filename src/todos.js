@@ -39,15 +39,57 @@ const todo = (state, action) => {
   }
 }
 
-const visibilityFilter = (
+const visibilityFilter = ( // called by FilterLink
   state = 'SHOW_ALL',
   action
 ) => {
   switch (action.type) {
     case 'SET_VISIBILITY_FILTER':
-      return action.filter
+      return action.filter // 'SHOW_ACTIVE' for example from TodoApp > FilterLink > store.dispatch in FilterLink
     default:
       return state
+  }
+}
+
+const FilterLink = ({
+  filter,
+  currentFilter,
+  children
+}) => {
+  if (filter === currentFilter) {
+    return <span>{children}</span>
+  }
+
+  return (
+    <a href="#"
+      onClick={e => {
+        e.preventDefault()
+        store.dispatch({
+          type: 'SET_VISIBILITY_FILTER',
+          filter
+        })
+      }}
+    >
+      {children}
+    </a>
+  )
+}
+
+const getVisibleTodos = (
+  todos,
+  filter
+) => {
+  switch (filter) {
+    case 'SHOW_ALL':
+      return todos
+    case 'SHOW_COMPLETED':
+      return todos.filter(
+        t => t.completed
+      )
+    case 'SHOW_ACTIVE':
+      return todos.filter(
+        t => !t.completed
+      )
   }
 }
 
@@ -72,6 +114,22 @@ export const store = createStore(todoApp)
 let nextTodoId = 0
 export class TodoApp extends Component {
   render () {
+    /* STEP 1 */
+    // const visibleTodos = getVisibleTodos(
+    //   this.props.todos,
+    //   this.props.visibilityFilter
+    // )
+
+    /* STEP 2 */
+    const {
+      todos, // todos come from store.getState()
+      visibilityFilter
+    } = this.props
+    const visibleTodos = getVisibleTodos( // just filtering data from store
+      todos,
+      visibilityFilter
+    )
+
     return (
       <div>
         <input type="text" ref={node => {
@@ -89,7 +147,7 @@ export class TodoApp extends Component {
         </button>
 
         <ul>
-          {this.props.todos.map(todo =>
+          {visibleTodos.map(todo =>
             <li key={todo.id}
               onClick={() => {
                 store.dispatch({
@@ -108,6 +166,30 @@ export class TodoApp extends Component {
             </li>
           )}
         </ul>
+        <p>
+          Show:
+          {' '}
+          <FilterLink
+            filter='SHOW_ALL'
+            currentFilter={visibilityFilter}
+          >
+            All
+          </FilterLink>
+          {', '}
+          <FilterLink
+            filter='SHOW_ACTIVE'
+            currentFilter={visibilityFilter}
+          >
+            Active
+          </FilterLink>
+          {', '}
+          <FilterLink
+            filter='SHOW_COMPLETED'
+            currentFilter={visibilityFilter}
+          >
+            Completed
+          </FilterLink>
+        </p>
       </div>
     )
   }
