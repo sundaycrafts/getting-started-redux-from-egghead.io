@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Component } from 'react'
+import { connect } from 'react-redux'
 
 const combineReducers = (reducers) => {
   return (state = {}, action) => {
@@ -228,43 +229,64 @@ export const todos = (state = [], action) => {
 
 export const todoApp = combineReducers({ todos, visibilityFilter })
 
-class VisibleTodoList extends Component {
-  componentDidMount () {
-    const { store } = this.context
-    store.unsubscribe = store.subscribe(() =>
-      this.forceUpdate()
-    )
-  }
-
-  componentWillUnmount () {
-    this.unsubscribe()
-  }
-
-  render () {
-    const { store } = this.context
-    const state = store.getState()
-
-    return (
-      <TodoList
-        todos={
-          getVisibleTodos(
-            state.todos,
-            state.visibilityFilter
-          )
-        }
-        onTodoClick={id =>
-          store.dispatch({
-            type: 'TOGGLE_TODO',
-            id
-          })
-        }
-      />
+const mapStateToProps = (state) => {
+  return {
+    todos: getVisibleTodos(
+      state.todos,
+      state.visibilityFilter
     )
   }
 }
-VisibleTodoList.contextTypes = {
-  store: PropTypes.object
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onTodoClick: id => {
+      dispatch({
+        type: 'TOGGLE_TODO',
+        id
+      })
+    }
+  }
 }
+
+const VisibleTodoList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList)
+
+// class VisibleTodoList extends Component {
+// /* A: subscribe store state in context */
+//   componentDidMount () {
+//     const { store } = this.context
+//     store.unsubscribe = store.subscribe(() =>
+//       this.forceUpdate()
+//     )
+//   }
+
+//   componentWillUnmount () {
+//     this.unsubscribe()
+//   }
+
+//   render () {
+//     const { store } = this.context
+//     const state = store.getState()
+
+// /* B: map props & dispatch to TodoList component */
+//     return (
+//       <TodoList
+//         todos={
+
+//         }
+//         onTodoClick={
+//
+//         }
+//       />
+//     )
+//   }
+// }
+// VisibleTodoList.contextTypes = {
+//   store: PropTypes.object
+// }
 
 let nextTodoId = 0
 export const TodoApp = () => (
