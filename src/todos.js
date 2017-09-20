@@ -1,43 +1,34 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-const combineReducers = (reducers) => {
-  return (state = {}, action) => {
-    return Object.keys(reducers).reduce(
-      (nextState, key) => {
-        nextState[key] = reducers[key](
-          state[key],
-          action
-        )
-        return nextState
-      },
-      {}
-    )
-  }
-}
+const combineReducers = (reducers) =>
+  (state = {}, action) => Object.keys(reducers).reduce(
+    (nextState, key) => {
+      nextState[key] = reducers[key](
+        state[key],
+        action
+      )
+      return nextState
+    },
+    {}
+  )
 
 let nextTodoId = 0
-const addTodo = (text) => {
-  return {
-    type: 'ADD_TODO',
-    id: nextTodoId++,
-    text
-  }
-}
+const addTodo = (text) => ({
+  type: 'ADD_TODO',
+  id: nextTodoId++,
+  text
+})
 
-const setVisibilityFilter = (filter) => {
-  return {
-    type: 'SET_VISIBILITY_FILTER',
-    filter
-  }
-}
+const setVisibilityFilter = (filter) => ({
+  type: 'SET_VISIBILITY_FILTER',
+  filter
+})
 
-const toggleTodo = (id) => {
-  return {
-    type: 'TOGGLE_TODO',
-    id
-  }
-}
+const toggleTodo = (id) => ({
+  type: 'TOGGLE_TODO',
+  id
+})
 
 const todo = (state, action) => {
   switch (action.type) {
@@ -97,24 +88,20 @@ const Link = ({
 const mapStateToLinkProps = (
   state,
   ownProps
-) => {
-  return {
-    active:
-      ownProps.filter ===
-      state.visibilityFilter
-  }
-}
+) => ({
+  active:
+    ownProps.filter ===
+    state.visibilityFilter
+})
 
 const mapDispatchToLinkProps = (
   dispatch,
   ownProps
-) => {
-  return {
-      onClick: () => {
-        dispatch(setVisibilityFilter(ownProps.filter))
-      }
+) => ({
+  onClick: () => {
+    dispatch(setVisibilityFilter(ownProps.filter))
   }
-}
+})
 
 const FilterLink = connect(
   mapStateToLinkProps,
