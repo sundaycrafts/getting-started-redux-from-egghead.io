@@ -4,7 +4,8 @@ import ReactDOM from 'react-dom'
 import { createStore } from 'redux'
 import { Provider } from 'react-redux'
 import registerServiceWorker from './registerServiceWorker'
-import { TodoApp, todoApp } from './todos'
+import todoApp from './reducers'
+import App from './components/App'
 
 const persistedState = {
   todos: [{
@@ -17,7 +18,7 @@ const store = createStore(todoApp, persistedState)
 
 ReactDOM.render(
   <Provider store={store}>
-    <TodoApp />
+    <App />
   </Provider>,
   document.getElementById('root')
 )
