@@ -7,13 +7,13 @@ const getVisibleTodos = (
   filter
 ) => {
   switch (filter) {
-    case 'SHOW_ALL':
+    case 'all':
       return todos
-    case 'SHOW_COMPLETED':
+    case 'completed':
       return todos.filter(
         t => t.completed
       )
-    case 'SHOW_ACTIVE':
+    case 'active':
       return todos.filter(
         t => !t.completed
       )
@@ -22,26 +22,22 @@ const getVisibleTodos = (
   }
 }
 
-const mapStateToTodoListProps = (state) => {
-  return {
-    todos: getVisibleTodos(
-      state.todos,
-      state.visibilityFilter
-    )
-  }
-}
+const mapStateToProps = (state, ownProps) => ({
+  todos: getVisibleTodos(
+    state.todos,
+    ownProps.filter
+  )
+})
 
-const mapDispatchToTodoListProps = (dispatch) => {
-  return {
-    onTodoClick: id => {
-      dispatch(toggleTodo(id))
-    }
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onTodoClick: id => {
+    dispatch(toggleTodo(id))
   }
-}
+})
 
 const VisibleTodoList = connect(
-  mapStateToTodoListProps,
-  mapDispatchToTodoListProps
+  mapStateToProps,
+  mapDispatchToProps
 )(TodoList)
 
 export default VisibleTodoList
